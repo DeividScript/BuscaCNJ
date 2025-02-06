@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Processos</title>
+    <!-- Importa fontes e ícones do Google -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <style>
+        /* Define a fonte padrão e margens do corpo da página */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 20px;
+        }
+        /* Estiliza a tabela para ocupar toda a largura e colapsar bordas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        /* Define padding, bordas e alinhamento para células da tabela */
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        /* Centraliza o conteúdo e define a largura máxima do container */
+        .container {
+            margin: auto;
+            max-width: 800px;
+        }
+        /* Impede a quebra de linha da data */
+        .data-formatada {
+            white-space: nowrap;
+        }
+        /* Estiliza o grupo de formulário para alinhamento flexível */
+        .form-group {
+            display: flex;
+            align-items: center;
+        }
+        /* Estiliza o campo de entrada do formulário */
+        .form-group input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+        /* Estiliza o botão do formulário */
+        .form-group button {
+            background-color: #2196f3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Consultar Processo</h1>
+    <!-- Formulário para consulta de processo -->
+    <form method="POST">
+        <div class="form-group">
+            <input type="text" name="numero_processo" id="numero_processo" required>
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+    <!-- Verifica se há dados do processo para exibir -->
+    {% if processo %}
+    <h2>Dados do Processo</h2>
+    <table>
+        <!-- Itera sobre os itens do processo -->
+        {% for key, value in processo.items() %}
+            <tr>
+                <th>{{ key }}</th>
+                <td>
+                    <!-- Verifica se a chave é "movimentos" para exibir tabela de movimentos -->
+                    {% if key == "movimentos" %}
+                        <table>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Nome</th>
+                                <th>Complementos Tabelados</th>
+                                <th>Órgão Julgador</th> <!-- Adiciona coluna para Órgão Julgador -->
+                            </tr>
+                            <!-- Itera sobre os movimentos -->
+                            {% for movimento in value %}
+                                <tr>
+                                    <td class="data-formatada">{{ movimento.dataHora }}</td>
+                                    <td>{{ movimento.nome }}</td>
+                                    <td>
+                                        <!-- Verifica se há complementos tabelados -->
+                                        {% if movimento.complementosTabelados %}
+                                            <table>
+                                                <tr>
+                                                    <th>Código</th>
+                                                    <th>Descrição</th>
+                                                    <th>Valor</th>
+                                                    <th>Nome</th>
+                                                </tr>
+                                                <!-- Itera sobre os complementos tabelados -->
+                                                {% for complemento in movimento.complementosTabelados %}
+                                                    <tr>
+                                                        <td>{{ complemento.codigo }}</td>
+                                                        <td>{{ complemento.descricao }}</td>
+                                                        <td>{{ complemento.valor }}</td>
+                                                        <td>{{ complemento.nome }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </table>
+                                        {% else %}
+                                            <i>Nenhum complemento tabelado</i>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <!-- Verifica se há dados do Órgão Julgador do movimento -->
+                                        {% if movimento.get("orgaoJulgador") %}
+                                          {{ movimento.orgaoJulgador.nomeOrgao }} ({{ movimento.orgaoJulgador.codigoOrgao }})
+                                        {% else %}
+                                           -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    <!-- Verifica se a chave é "assuntos" para exibir tabela de assuntos -->
+                    {% elif key == "assuntos" %}
+                        <table>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nome</th>
+                            </tr>
+                            <!-- Itera sobre os assuntos -->
+                            {% for assunto in value %}
+                                <tr>
+                                    <td>{{ assunto.codigo }}</td>
+                                    <td>{{ assunto.nome }}</td>
+                               </tr>
+                            {% endfor %}
+                        </table>
+                    <!-- Verifica se o valor é um dicionário para exibir tabela de pares chave-valor -->
+                    {% elif value|is_dict %}
+                        <table>
+                            <!-- Itera sobre os pares chave-valor do dicionário -->
+                            {% for k, v in value.items() %}
+                                <tr>
+                                    <th>{{ k }}</th>
+                                    <td>{{ v }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    <!-- Exibe o valor diretamente se não for um dicionário -->
+                    {% else %}
+                        {{ value }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <!-- Exibe mensagem de erro se houver -->
+    {% elif mensagem_erro %}
+        <p style="color: red;">{{ mensagem_erro }}</p>
+    {% endif %}
+</div>
+</body>
+</html>
