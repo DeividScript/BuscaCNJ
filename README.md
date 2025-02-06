@@ -96,7 +96,6 @@ Se o processo for encontrado, os metadados serão exibidos em uma tabela. Caso c
 ## Estrutura do projeto
 
 ```
-```
 seu_projeto/
 ├── templates/
 │   └── index.html
@@ -104,7 +103,7 @@ seu_projeto/
 ├── .env             
 ├── requirements.txt    
 └── README.md   
-
+```
 
 #  Tratamento de erros
 
