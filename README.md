@@ -1,6 +1,6 @@
 # Consulta de Processos CNJ
 
-Este projeto implementa uma aplicação web simples em Python com Flask para consultar metadados de processos judiciais utilizando a API Pública do CNJ (Conselho Nacional de Justiça) para buscas processos do TJSP.
+Este projeto implementa uma aplicação web simples em Python com Flask para consultar metadados de processos judiciais utilizando a API Pública do CNJ (Conselho Nacional de Justiça) para buscas de processos do TJSP.
 
 ## Funcionalidades
 
